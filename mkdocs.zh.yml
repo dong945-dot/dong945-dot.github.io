@@ -1,0 +1,45 @@
+﻿site_name: 小东
+site_url: ""
+
+docs_dir: docs-zh
+site_dir: site/zh
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.instant
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+  extra:
+    alternate:
+      - name: English
+        link: /en/
+        lang: en
+      - name: 中文
+        link: /zh/
+        lang: zh
+
+nav:
+  - 首页: index.md
+  - 文章:
+      - "ResNet 与 BatchNorm 理解": posts/resnet.md
+      - "Forward-Forward 算法": posts/forward-forward.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.arithmatex:
+      generic: true
+
+plugins:
+  - search
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
