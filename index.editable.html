@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>liuxiandong.net (editable)</title>
+
+  <style>
+    :root{
+      --ink:#0f172a;
+      --muted:#5b6b80;
+      --stroke: rgba(15,23,42,.10);
+      --shadow: 0 18px 60px rgba(2,6,23,.10);
+      --accent:#2563eb;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "PingFang SC","Microsoft YaHei", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(900px 600px at 15% 15%, rgba(59,130,246,.18), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(34,211,238,.16), transparent 60%),
+        radial-gradient(900px 700px at 50% 100%, rgba(99,102,241,.14), transparent 62%),
+        linear-gradient(180deg, #fbfdff, #f7f9ff);
+    }
+    a{ color: var(--accent); text-decoration:none; }
+    a:hover{ text-decoration: underline; }
+    main{ max-width: 1020px; margin: 0 auto; padding: 58px 20px 100px; }
+
+    /* Toolbar */
+    .toolbar{
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      margin: -58px -20px 20px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,.70);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(15,23,42,.08);
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content: space-between;
+    }
+    .btn{
+      display:inline-flex; align-items:center; gap:10px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.78);
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor:pointer;
+      font-size: 13px;
+      color:#0f172a;
+    }
+    .btn:hover{ border-color: rgba(37,99,235,.25); }
+    .hint{ font-size: 12.5px; color: rgba(91,107,128,.95); line-height: 1.6; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+
+    /* Layout */
+    .top{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap: 44px;
+      align-items:start;
+      justify-content:center;
+      margin-top: 32px;
+    }
+    .left{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      padding-top: 10px;
+    }
+    h1{
+      margin: 8px 0 16px;
+      font-weight: 600;
+      font-size: 44px;
+      letter-spacing: -.02em;
+      line-height: 1.05;
+    }
+    .intro{
+      width: min(600px, 100%);
+      font-size: 14.5px;
+      line-height: 1.95;
+      color: #1f2a44;
+    }
+    .intro p{ margin: 0 0 14px; }
+
+    .navline{ margin-top: 32px; font-size: 14px; }
+    .navline .sep{ color: rgba(91,107,128,.9); padding: 0 8px; }
+
+    .photo{
+      justify-self:center;
+      width: 420px;
+      max-width: 100%;
+      border-radius: 4px;
+      overflow:hidden;
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.6);
+      position: relative;
+    }
+    .photo img{ width:100%; display:block; object-fit: cover; aspect-ratio: 420 / 260; }
+    .pactions{
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      z-index: 3;
+    }
+    .pbtn{
+      appearance: none;
+      border: 1px solid rgba(15,23,42,.22);
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      color: #0f172a;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(2,6,23,.12);
+    }
+    .pbtn:hover{ background: rgba(255,255,255,.9); }
+    .pfile{ display:none; }
+
+    section{ margin-top: 32px; }
+    .sectionInner{ width: min(760px, 100%); margin: 0 auto; }
+    h2{
+      font-size: 26px;
+      font-weight: 600;
+      margin: 0 0 14px;
+      letter-spacing: -.01em;
+      text-align: left;
+    }
+    .oneLine{ font-size: 14.5px; color: var(--muted); line-height: 1.9; max-width: 90ch; text-align:left; }
+
+    /* Entry layout */
+    .entryRow{
+      display:grid;
+      grid-template-columns: 210px 1fr;
+      gap: 18px;
+      align-items:start;
+      margin-top: 32px;
+    }
+    .thumb{
+      width: 210px;
+      height: 130px;
+      border-radius: 4px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(34,211,238,.14));
+      box-shadow: 0 12px 40px rgba(2,6,23,.08);
+      overflow:hidden;
+      position: relative;
+    }
+    .entry h3{ margin: 0 0 6px; font-size: 16px; font-weight: 600; text-align:left; }
+    .entry .meta{ margin: 0 0 8px; font-size: 13.5px; color: rgba(91,107,128,.95); line-height: 1.7; text-align:left; }
+    .entry .desc{ margin: 0; font-size: 14px; color: #2a3857; line-height: 1.85; max-width: 90ch; text-align:left; }
+
+    /* Editable styling */
+    [contenteditable="true"]{
+      outline:none;
+      border-radius: 8px;
+      padding: 2px 4px;
+      box-shadow: inset 0 0 0 1px rgba(34,211,238,0);
+      transition: box-shadow .15s ease, background .15s ease;
+    }
+    [contenteditable="true"]:focus{
+      background: rgba(255,255,255,.85);
+      box-shadow: inset 0 0 0 1px rgba(34,211,238,.70), 0 0 0 4px rgba(34,211,238,.16);
+    }
+    .placeholder{ color: rgba(91,107,128,.9); }
+
+    /* Publication dynamic list */
+    .pubDynamicList{ margin-top: 32px; display:flex; flex-direction:column; gap: 18px; }
+    .pubItem{ display:grid; grid-template-columns: 210px 1fr; gap: 18px; align-items:start; }
+    .pubThumb{
+      width: 210px; height: 130px;
+      border-radius: 4px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(34,211,238,.14));
+      box-shadow: 0 12px 40px rgba(2,6,23,.08);
+      overflow:hidden;
+      position:relative;
+    }
+    .pubThumb a{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      text-decoration:none;
+      color: rgba(15,23,42,.88);
+      font-weight: 800;
+      background: rgba(255,255,255,.0);
+    }
+    .pubThumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+    .pubThumbLabel{
+      position:absolute;
+      left: 10px;
+      bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.16);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: .02em;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 2;
+    }
+    .pubAdd{ border-style:dashed; background: rgba(255,255,255,.65); }
+    .pubAdd button{
+      position:absolute; inset:0;
+      border:0; background: transparent;
+      cursor:pointer;
+      font-weight: 900;
+      font-size: 40px;
+      color: rgba(15,23,42,.55);
+    }
+    .pubAdd button:hover{ color: rgba(37,99,235,.75); }
+    .pubMeta h3{ margin: 0 0 6px; font-size: 16px; font-weight: 600; text-align:left; }
+    .pubMeta .meta{ margin: 0 0 8px; font-size: 13.5px; color: rgba(91,107,128,.95); line-height: 1.7; text-align:left; }
+    .pubMeta .desc{ margin: 0; font-size: 14px; color: #2a3857; line-height: 1.85; max-width: 90ch; text-align:left; }
+    .pubActions{ display:flex; gap:10px; margin-top: 32px; flex-wrap:wrap; }
+    .pubBtn{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.78);
+      cursor:pointer;
+      font-size: 13px;
+      color:#0f172a;
+    }
+    .pubBtn:hover{ border-color: rgba(37,99,235,.25); }
+
+    /* Right-side 4 textboxes */
+    .pubRowFlex{ display:flex; gap:14px; align-items:flex-start; }
+    .pubRowFlex .pubMeta{ flex: 1 1 auto; min-width: 0; }
+    .pubSideForm{
+      width: 320px;
+      flex: 0 0 320px;
+      padding:10px;
+      border:1px solid rgba(15,23,42,.12);
+      border-radius:12px;
+      background: rgba(255,255,255,.7);
+      box-shadow: 0 10px 30px rgba(2,6,23,.06);
+    }
+    .pubSideForm label{ display:block; font-size:12px; color:#475569; margin:8px 0 4px; }
+    .pubSideForm input, .pubSideForm textarea{
+      width:100%;
+      font: inherit;
+      font-size:13px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,.18);
+      background:#fff;
+      outline:none;
+    }
+    .pubSideForm textarea{ min-height:72px; resize:vertical; }
+
+    @media (max-width: 980px){
+      .top{ grid-template-columns: 1fr; }
+      .photo{ width: min(520px, 100%); }
+      .pubRowFlex{ flex-direction: column; }
+      .pubSideForm{ width:100%; flex-basis:auto; }
+    }
+    @media (max-width: 600px){
+      h1{ font-size: 38px; }
+      .entryRow{ grid-template-columns: 1fr; }
+      .thumb{ width:100%; height: 150px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="toolbar">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <button class="btn" id="exportBtn">Export readonly <span class="mono">index.html</span></button>
+        <button class="btn" id="resetBtn">Reset saved draft</button>
+      </div>
+      <div class="hint">
+        After editing, click <strong>Export readonly index.html</strong> to download a readonly page that mirrors your edits.<br/>
+        Email/Github are fixed links; CV is a placeholder.
+      </div>
+    </div>
+
+    <div class="top">
+      <div class="left">
+        <h1 id="name" contenteditable="true">Your Name</h1>
+
+        <div class="intro" id="intro" contenteditable="true">
+          <p><span class="placeholder">Subtitle paragraph 1 (paste your text here)</span></p>
+          <p><span class="placeholder">Subtitle paragraph 2 (paste your text here)</span></p>
+        </div>
+
+        <div class="navline">
+          <a id="emailLink" href="mailto:2025190903003@std.uestc.edu.cn">Email</a>
+          <span class="sep">/</span>
+          <span id="cvText" class="placeholder" contenteditable="true">CV</span>
+          <span class="sep">/</span>
+          <a id="githubLink" href="https://github.com/dong945-dot" target="_blank" rel="noreferrer">Github</a>
+        </div>
+      </div>
+
+      <figure class="photo">
+        <img id="profileImg" src="profile.jpg" alt="Profile photo" />
+        <div class="pactions">
+          <button type="button" class="pbtn" onclick="document.getElementById('profileUpload').click()">Upload photo</button>
+          <input id="profileUpload" class="pfile" type="file" accept="image/*" />
+        </div>
+      </figure>
+    </div>
+
+    <section>
+      <div class="sectionInner">
+        <h2>Research interests</h2>
+        <p class="oneLine" id="research" contenteditable="true">
+          <span class="placeholder">I have a broad interest in ...</span>
+        </p>
+      </div>
+    </section>
+
+    <section id="pubSection">
+      <div class="sectionInner">
+        <h2>Publication</h2>
+        <div id="pubDynamicList" class="pubDynamicList"></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sectionInner">
+        <h2>Blog</h2>
+        <div class="entryRow">
+          <div class="thumb" aria-hidden="true"></div>
+          <div class="entry" id="blog1" contenteditable="true">
+            <h3><a href="#" class="placeholder">Post title (add link later)</a></h3>
+            <p class="meta"><span class="placeholder">YYYY/MM/DD</span></p>
+            <p class="desc"><span class="placeholder">One-sentence summary...</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+</main>
+
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    (function(){
+      // confetti ~2.5s
+      try{
+        const end = Date.now() + 2500;
+        (function frame(){
+          if(typeof confetti !== "function") return;
+          confetti({
+            particleCount: 4,
+            spread: 70,
+            startVelocity: 22,
+            gravity: 1.0,
+            scalar: 0.9,
+            origin: { x: Math.random(), y: 0.03 },
+            colors: ['#3b82f6','#60a5fa','#22d3ee','#6366f1','#c7d2fe']
+          });
+          if(Date.now() < end) requestAnimationFrame(frame);
+        })();
+      }catch(e){}
+
+      // year
+      const yEl = document.getElementById("y");
+      if(yEl) yEl.textContent = String(new Date().getFullYear());
+
+      // --- Draft persistence (autosave) ---
+      const STORAGE_KEY = "liuxiandong_site_draft_v1";
+      const editableIds = ["name","intro","cvText","research","blog1"];
+
+      function getDraft(){
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); }
+        catch { return null; }
+      }
+      function saveDraft(){
+        const draft = {};
+        for(const id of editableIds){
+          const el = document.getElementById(id);
+          if(el) draft[id] = el.innerHTML;
+        }
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(draft)); }catch(e){}
+      }
+      function loadDraft(){
+        const draft = getDraft();
+        if(!draft) return;
+        for(const [id, html] of Object.entries(draft)){
+          const el = document.getElementById(id);
+          if(el && typeof html === "string") el.innerHTML = html;
+        }
+      }
+
+      loadDraft();
+      window.addEventListener("input", (e) => {
+        const t = e.target;
+        if(t && t.closest && t.closest('[contenteditable="true"]')) saveDraft();
+      });
+
+      const resetBtn = document.getElementById("resetBtn");
+      if(resetBtn){
+        resetBtn.addEventListener("click", () => {
+          try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+          location.reload();
+        });
+      }
+
+      // --- Profile photo (saved as data URL) ---
+      const PHOTO_KEY = "profilePhotoDataUrl_v1";
+      function applyPhoto(dataUrl){
+        const img = document.getElementById("profileImg");
+        if(img) img.src = dataUrl;
+      }
+      try{
+        const saved = localStorage.getItem(PHOTO_KEY);
+        if(saved && saved.startsWith("data:image/")) applyPhoto(saved);
+      }catch(e){}
+
+      const upload = document.getElementById("profileUpload");
+      if(upload){
+        upload.addEventListener("change", () => {
+          const file = upload.files && upload.files[0];
+          if(!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = String(reader.result || "");
+            if(!dataUrl.startsWith("data:image/")) return;
+            try{ localStorage.setItem(PHOTO_KEY, dataUrl); }catch(e){}
+            applyPhoto(dataUrl);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // --- Publication uploader ---
+      const list = document.getElementById("pubDynamicList");
+      const PUB_KEY = "pub_items_v1";
+      const PUB_SIDE_KEY = "pub_textboxes_v1"; // per-item extra fields
+
+      function loadItems(){
+        try{
+          const raw = localStorage.getItem(PUB_KEY);
+          const arr = raw ? JSON.parse(raw) : [];
+          return Array.isArray(arr) ? arr : [];
+        }catch(e){ return []; }
+      }
+      function saveItems(items){
+        try{ localStorage.setItem(PUB_KEY, JSON.stringify(items)); }catch(e){}
+      }
+
+      function loadSide(){
+        try { return JSON.parse(localStorage.getItem(PUB_SIDE_KEY) || "{}") || {}; }
+        catch { return {}; }
+      }
+      function saveSide(state){
+        try { localStorage.setItem(PUB_SIDE_KEY, JSON.stringify(state)); } catch(e) {}
+      }
+
+      let items = loadItems();
+
+      function createThumb(it){
+        const thumb = document.createElement("div");
+        thumb.className = "pubThumb";
+
+        if(it.coverSrc){
+          const img = document.createElement("img");
+          img.src = it.coverSrc;
+          img.alt = "cover";
+          thumb.appendChild(img);
+        }
+
+        const a = document.createElement("a");
+        a.href = it.pdfHref || "#";
+        a.target = "_blank";
+        a.rel = "noreferrer";
+        a.textContent = "Open PDF";
+        thumb.appendChild(a);
+
+        const label = document.createElement("span");
+        label.className = "pubThumbLabel";
+        label.textContent = "PDF";
+        thumb.appendChild(label);
+
+        return thumb;
+      }
+
+      function createMeta(it, idx){
+        const meta = document.createElement("div");
+        meta.className = "pubMeta";
+
+        const h3 = document.createElement("h3");
+        h3.contentEditable = "true";
+        h3.innerHTML = it.titleHtml || "Paper title (edit)";
+        meta.appendChild(h3);
+
+        const pMeta = document.createElement("p");
+        pMeta.className = "meta";
+        pMeta.contentEditable = "true";
+        pMeta.innerHTML = it.metaHtml || "Authors ¡¤ Venue, Year";
+        meta.appendChild(pMeta);
+
+        const pDesc = document.createElement("p");
+        pDesc.className = "desc";
+        pDesc.contentEditable = "true";
+        pDesc.innerHTML = it.descHtml || "Short description...";
+        meta.appendChild(pDesc);
+
+        const actions = document.createElement("div");
+        actions.className = "pubActions";
+
+        const addCover = document.createElement("button");
+        addCover.type = "button";
+        addCover.className = "pubBtn";
+        addCover.textContent = "Add cover (filename)";
+        addCover.addEventListener("click", () => {
+          const name = prompt("Cover image filename in papers/covers/ (e.g., mypaper.png):", "");
+          if(!name) return;
+          items[idx].coverSrc = "papers/covers/" + name;
+          saveItems(items);
+          render();
+        });
+
+        const setPdf = document.createElement("button");
+        setPdf.type = "button";
+        setPdf.className = "pubBtn";
+        setPdf.textContent = "Set PDF (filename)";
+        setPdf.addEventListener("click", () => {
+          const name = prompt("PDF filename in papers/ (e.g., mypaper.pdf):", "");
+          if(!name) return;
+          items[idx].pdfHref = "papers/" + name;
+          saveItems(items);
+          render();
+        });
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "pubBtn";
+        del.textContent = "Delete";
+        del.addEventListener("click", () => {
+          items.splice(idx, 1);
+          saveItems(items);
+          render();
+        });
+
+        actions.appendChild(setPdf);
+        actions.appendChild(addCover);
+        actions.appendChild(del);
+        meta.appendChild(actions);
+
+        meta.addEventListener("input", () => {
+          items[idx].titleHtml = h3.innerHTML;
+          items[idx].metaHtml  = pMeta.innerHTML;
+          items[idx].descHtml  = pDesc.innerHTML;
+          saveItems(items);
+        });
+
+        return meta;
+      }
+
+      function createSideForm(idx){
+        const state = loadSide();
+        const key = String(idx);
+        const cur = state[key] || {};
+
+        const box = document.createElement("div");
+        box.className = "pubSideForm";
+        box.innerHTML = `
+          <label>Title</label>
+          <input type="text" class="pubTB pubTB-title" placeholder="Paper title" />
+          <label>Authors</label>
+          <input type="text" class="pubTB pubTB-authors" placeholder="Authors" />
+          <label>Link</label>
+          <input type="url" class="pubTB pubTB-link" placeholder="https://..." />
+          <label>Notes</label>
+          <textarea class="pubTB pubTB-notes" placeholder="Notes..."></textarea>
+        `;
+
+        box.querySelector(".pubTB-title").value   = cur.title   || "";
+        box.querySelector(".pubTB-authors").value = cur.authors || "";
+        box.querySelector(".pubTB-link").value    = cur.link    || "";
+        box.querySelector(".pubTB-notes").value   = cur.notes   || "";
+
+        const persist = () => {
+          state[key] = {
+            title: box.querySelector(".pubTB-title").value,
+            authors: box.querySelector(".pubTB-authors").value,
+            link: box.querySelector(".pubTB-link").value,
+            notes: box.querySelector(".pubTB-notes").value,
+          };
+          saveSide(state);
+        };
+        box.addEventListener("input", persist);
+
+        return box;
+      }
+
+      function render(){
+        if(!list) return;
+        list.innerHTML = "";
+
+        items.forEach((it, idx) => {
+          const row = document.createElement("div");
+          row.className = "pubItem pubRowFlex";
+
+          row.appendChild(createThumb(it));
+          row.appendChild(createMeta(it, idx));
+          row.appendChild(createSideForm(idx));
+
+          list.appendChild(row);
+        });
+
+        // add row
+        const addRow = document.createElement("div");
+        addRow.className = "pubItem";
+
+        const addThumb = document.createElement("div");
+        addThumb.className = "pubThumb pubAdd";
+
+        const plus = document.createElement("button");
+        plus.type = "button";
+        plus.textContent = "+";
+        plus.addEventListener("click", () => {
+          items.push({
+            pdfHref: "papers/your-paper.pdf",
+            coverSrc: "",
+            titleHtml: "Paper title (edit)",
+            metaHtml: "Authors ¡¤ Venue, Year",
+            descHtml: "Short description..."
+          });
+          saveItems(items);
+          render();
+        });
+
+        addThumb.appendChild(plus);
+
+        const addMeta = document.createElement("div");
+        addMeta.className = "pubMeta";
+        addMeta.innerHTML = `<p class="meta">
+          Click <strong>£«</strong> to add an item. PDF should be in <span class="mono">papers/</span>,
+          covers in <span class="mono">papers/covers/</span>.
+        </p>`;
+
+        addRow.appendChild(addThumb);
+        addRow.appendChild(addMeta);
+        list.appendChild(addRow);
+      }
+
+      render();
+
+      // --- Export readonly (DOM-based; avoids giant template strings) ---
+      function exportReadonly(){
+        // Create a minimal readonly document and copy styles + a cleaned main
+        const doc = document.implementation.createHTMLDocument("liuxiandong.net");
+        doc.documentElement.lang = "en";
+
+        // head
+        const meta1 = doc.createElement("meta"); meta1.setAttribute("charset","utf-8");
+        const meta2 = doc.createElement("meta"); meta2.name="viewport"; meta2.content="width=device-width, initial-scale=1";
+        const title = doc.createElement("title"); title.textContent = "liuxiandong.net";
+        doc.head.appendChild(meta1); doc.head.appendChild(meta2); doc.head.appendChild(title);
+
+        // copy styles
+        document.querySelectorAll("style").forEach(st => {
+          const s = doc.createElement("style");
+          s.textContent = st.textContent;
+          doc.head.appendChild(s);
+        });
+
+        const mainClone = document.querySelector("main").cloneNode(true);
+
+        // remove editor UI
+        const tb = mainClone.querySelector(".toolbar"); if(tb) tb.remove();
+        mainClone.querySelectorAll(".pactions").forEach(x => x.remove());
+        mainClone.querySelectorAll('[contenteditable="true"]').forEach(el => el.removeAttribute("contenteditable"));
+        mainClone.querySelectorAll(".pubSideForm").forEach(x => x.remove());
+        mainClone.querySelectorAll(".pubActions").forEach(x => x.remove());
+        mainClone.querySelectorAll(".pubAdd").forEach(x => { const row = x.closest(".pubItem"); if(row) row.remove(); });
+        mainClone.querySelectorAll(".pubRowFlex").forEach(x => x.classList.remove("pubRowFlex"));
+
+        // Convert Publication to static entryRow and add "paper" link on the right
+        (function(){
+          const pubList = mainClone.querySelector("#pubDynamicList");
+          if(!pubList) return;
+
+          const rows = Array.from(pubList.querySelectorAll(".pubItem"));
+          const cleaned = rows.filter(r => !r.querySelector(".pubAdd"));
+
+          const frag = document.createDocumentFragment();
+          cleaned.forEach(r => {
+            const thumbDiv = r.querySelector(".pubThumb");
+            const pdfA = thumbDiv ? thumbDiv.querySelector("a") : null;
+            const pdfHref = pdfA ? (pdfA.getAttribute("href") || "#") : "#";
+            const coverImg = thumbDiv ? thumbDiv.querySelector("img") : null;
+
+            const metaDiv = r.querySelector(".pubMeta");
+            const titleH3 = metaDiv ? metaDiv.querySelector("h3") : null;
+            const metaP = metaDiv ? metaDiv.querySelector("p.meta") : null;
+            const descP = metaDiv ? metaDiv.querySelector("p.desc") : null;
+
+            const entryRow = document.createElement("div");
+            entryRow.className = "entryRow";
+
+            // left thumb: image only (no "PDF" badge, no "Open PDF")
+            const aThumb = document.createElement("a");
+            aThumb.className = "thumb";
+            aThumb.href = pdfHref;
+            aThumb.target = "_blank";
+            aThumb.rel = "noreferrer";
+            if(coverImg){
+              aThumb.appendChild(coverImg.cloneNode(true));
+            }
+
+            // right
+            const entry = document.createElement("div");
+            entry.className = "entry";
+
+            const h3 = document.createElement("h3");
+            h3.innerHTML = titleH3 ? titleH3.innerHTML : "Paper title";
+            entry.appendChild(h3);
+
+            const pM = document.createElement("p");
+            pM.className = "meta";
+            pM.innerHTML = metaP ? metaP.innerHTML : "";
+            entry.appendChild(pM);
+
+            const pD = document.createElement("p");
+            pD.className = "desc";
+            pD.innerHTML = descP ? descP.innerHTML : "";
+            entry.appendChild(pD);
+
+            const paperLink = document.createElement("a");
+            paperLink.href = pdfHref;
+            paperLink.target = "_blank";
+            paperLink.rel = "noreferrer";
+            paperLink.textContent = "paper";
+            paperLink.style.color = "#2563eb";
+            paperLink.style.fontWeight = "600";
+            paperLink.style.display = "inline-block";
+            paperLink.style.marginTop = "8px";
+            entry.appendChild(paperLink);
+
+            entryRow.appendChild(aThumb);
+            entryRow.appendChild(entry);
+            frag.appendChild(entryRow);
+          });
+
+          pubList.innerHTML = "";
+          pubList.appendChild(frag);
+        })();
+
+        doc.body.appendChild(mainClone);
+
+        const htmlText = "<!doctype html>\n" + doc.documentElement.outerHTML;
+
+        const blob = new Blob([htmlText], {type:"text/html;charset=utf-8"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "index-" + new Date().toISOString().replaceAll(":","-") + ".html";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      }
+
+      const exportBtn = document.getElementById("exportBtn");
+      if(exportBtn) exportBtn.addEventListener("click", exportReadonly);
+    })();
+  </script>
+</body>
+</html>
+
+
+
+
