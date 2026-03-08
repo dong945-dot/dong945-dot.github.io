@@ -150,29 +150,25 @@
     .thumb{
       width: 210px;
       height: 130px;
-     /* Publication dynamic list */
+    /* Publication dynamic list */
 .pubDynamicList{ margin-top: 32px; display:flex; flex-direction:column; gap: 18px; }
 
-/* Use auto column for thumbnail so it can size to the image */
-.pubItem{ display:grid; grid-template-columns: auto 1fr; gap: 18px; align-items:start; }
+/* 固定缩略图列为 210px，框大小不变 */
+.pubItem{ display:grid; grid-template-columns: 210px 1fr; gap: 18px; align-items:start; }
 
-/* Make the thumbnail container adapt to the image size, but still cap with max dimensions */
+/* 保持框的固定大小 */
 .pubThumb{
-  /* allow size to be driven by the image */
-  width: auto;
-  height: auto;
-  max-width: 210px;    /* caps the max width if you want a limit */
-  max-height: 220px;   /* caps the max height if image is very tall */
+  width: 210px;
+  height: 130px;
   border-radius: 4px;
   border: 1px solid rgba(15,23,42,.10);
   background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(34,211,238,.14));
   box-shadow: 0 12px 40px rgba(2,6,23,.08);
-  overflow: visible;   /* allow label to overflow if needed */
-  position: relative;  /* needed for absolute label and overlay link */
-  display: inline-block;
+  overflow:hidden;
+  position:relative;
 }
 
-/* keep the anchor overlay so whole thumb is clickable; it's transparent */
+/* 覆盖链接（整个缩略可点击）保持不变 */
 .pubThumb a{
   position:absolute; inset:0;
   display:flex; align-items:center; justify-content:center;
@@ -180,24 +176,20 @@
   color: rgba(15,23,42,.88);
   font-weight: 800;
   background: rgba(255,255,255,0);
-  z-index: 2;
-  pointer-events: auto;
 }
 
-/* Let the image size determine the .pubThumb size, but constrain via max-* */
+/* 让图片在固定框内等比缩放以适应（不变形） */
+/* 如果希望图片裁切填满框（可能会裁掉部分），把 object-fit: contain 改为 object-fit: cover */
 .pubThumb img{
-  position: relative;
-  z-index: 1;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
   display:block;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* preserve aspect ratio; use 'cover' if you prefer cropping */
-  border-radius: inherit;
 }
 
-/* label stays positioned above image */
+/* label 保持在上层 */
 .pubThumbLabel{
   position:absolute;
   left: 10px;
@@ -209,6 +201,10 @@
   font-weight: 900;
   font-size: 12px;
   letter-spacing: .02em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 3;
+}
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 3;
@@ -819,6 +815,7 @@
   </script>
 </body>
 </html>
+
 
 
 
