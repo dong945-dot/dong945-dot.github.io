@@ -150,65 +150,69 @@
     .thumb{
       width: 210px;
       height: 130px;
-      border-radius: 4px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(34,211,238,.14));
-      box-shadow: 0 12px 40px rgba(2,6,23,.08);
-      overflow:hidden;
-      position: relative;
-    }
-    .entry h3{ margin: 0 0 6px; font-size: 16px; font-weight: 600; text-align:left; }
-    .entry .meta{ margin: 0 0 8px; font-size: 13.5px; color: rgba(91,107,128,.95); line-height: 1.7; text-align:left; }
-    .entry .desc{ margin: 0; font-size: 14px; color: #2a3857; line-height: 1.85; max-width: 90ch; text-align:left; }
+     /* Publication dynamic list */
+.pubDynamicList{ margin-top: 32px; display:flex; flex-direction:column; gap: 18px; }
 
-    /* Editable styling */
-    [contenteditable="true"]{
-      outline:none;
-      border-radius: 8px;
-      padding: 2px 4px;
-      box-shadow: inset 0 0 0 1px rgba(34,211,238,0);
-      transition: box-shadow .15s ease, background .15s ease;
-    }
-    [contenteditable="true"]:focus{
-      background: rgba(255,255,255,.85);
-      box-shadow: inset 0 0 0 1px rgba(34,211,238,.70), 0 0 0 4px rgba(34,211,238,.16);
-    }
-    .placeholder{ color: rgba(91,107,128,.9); }
+/* Use auto column for thumbnail so it can size to the image */
+.pubItem{ display:grid; grid-template-columns: auto 1fr; gap: 18px; align-items:start; }
 
-    /* Publication dynamic list */
-    .pubDynamicList{ margin-top: 32px; display:flex; flex-direction:column; gap: 18px; }
-    .pubItem{ display:grid; grid-template-columns: 210px 1fr; gap: 18px; align-items:start; }
-    .pubThumb{
-      width: 210px; height: 130px;
-      border-radius: 4px;
-      border: 1px solid rgba(15,23,42,.10);
-      background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(34,211,238,.14));
-      box-shadow: 0 12px 40px rgba(2,6,23,.08);
-      overflow:hidden;
-      position:relative;
-    }
-    .pubThumb a{
-      position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      text-decoration:none;
-      color: rgba(15,23,42,.88);
-      font-weight: 800;
-      background: rgba(255,255,255,.0);
-    }
-    .pubThumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
-    .pubThumbLabel{
-      position:absolute;
-      left: 10px;
-      bottom: 10px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(15,23,42,.16);
-      font-weight: 900;
-      font-size: 12px;
-      letter-spacing: .02em;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+/* Make the thumbnail container adapt to the image size, but still cap with max dimensions */
+.pubThumb{
+  /* allow size to be driven by the image */
+  width: auto;
+  height: auto;
+  max-width: 210px;    /* caps the max width if you want a limit */
+  max-height: 220px;   /* caps the max height if image is very tall */
+  border-radius: 4px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: linear-gradient(135deg, rgba(37,99,235,.18), rgba(34,211,238,.14));
+  box-shadow: 0 12px 40px rgba(2,6,23,.08);
+  overflow: visible;   /* allow label to overflow if needed */
+  position: relative;  /* needed for absolute label and overlay link */
+  display: inline-block;
+}
+
+/* keep the anchor overlay so whole thumb is clickable; it's transparent */
+.pubThumb a{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  text-decoration:none;
+  color: rgba(15,23,42,.88);
+  font-weight: 800;
+  background: rgba(255,255,255,0);
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* Let the image size determine the .pubThumb size, but constrain via max-* */
+.pubThumb img{
+  position: relative;
+  z-index: 1;
+  display:block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* preserve aspect ratio; use 'cover' if you prefer cropping */
+  border-radius: inherit;
+}
+
+/* label stays positioned above image */
+.pubThumbLabel{
+  position:absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(15,23,42,.16);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .02em;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 3;
+}
       z-index: 2;
     }
     .pubAdd{ border-style:dashed; background: rgba(255,255,255,.65); }
@@ -815,6 +819,7 @@
   </script>
 </body>
 </html>
+
 
 
 
