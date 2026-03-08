@@ -354,44 +354,6 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <script>
-    // --- Blog image uploader ---
-(function(){
-  const blogImgBtn = document.getElementById("blogImgBtn");
-  const blogImgUpload = document.getElementById("blogImgUpload");
-  const blogImg = document.getElementById("blogImg");
-  const BLOG_IMG_KEY = "blog_img_data_url_v1";
-
-  function applyBlogImg(dataUrl){
-    if (blogImg) {
-      blogImg.src = dataUrl;
-      blogImg.style.display = "block";
-    }
-  }
-
-  // 自动加载本地保存的图片
-  try {
-    const saved = localStorage.getItem(BLOG_IMG_KEY);
-    if (saved && saved.startsWith("data:image/")) applyBlogImg(saved);
-  } catch(e) {}
-
-  if (blogImgBtn && blogImgUpload) {
-    blogImgBtn.addEventListener("click", () => {
-      blogImgUpload.click();
-    });
-    blogImgUpload.addEventListener("change", () => {
-      const file = blogImgUpload.files && blogImgUpload.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = String(reader.result || "");
-        if (!dataUrl.startsWith("data:image/")) return;
-        try{ localStorage.setItem(BLOG_IMG_KEY, dataUrl); }catch(e){}
-        applyBlogImg(dataUrl);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-})();
     (function(){
       // confetti ~2.5s
       try{
@@ -695,7 +657,43 @@
       }
 
       render();
+// --- Blog image uploader ---
+(function(){
+  const blogImgBtn = document.getElementById("blogImgBtn");
+  const blogImgUpload = document.getElementById("blogImgUpload");
+  const blogImg = document.getElementById("blogImg");
+  const BLOG_IMG_KEY = "blog_img_data_url_v1";
 
+  function applyBlogImg(dataUrl){
+    if (blogImg) {
+      blogImg.src = dataUrl;
+      blogImg.style.display = "block";
+    }
+  }
+
+  try {
+    const saved = localStorage.getItem(BLOG_IMG_KEY);
+    if (saved && saved.startsWith("data:image/")) applyBlogImg(saved);
+  } catch(e) {}
+
+  if (blogImgBtn && blogImgUpload) {
+    blogImgBtn.addEventListener("click", () => {
+      blogImgUpload.click();
+    });
+    blogImgUpload.addEventListener("change", () => {
+      const file = blogImgUpload.files && blogImgUpload.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = String(reader.result || "");
+        if (!dataUrl.startsWith("data:image/")) return;
+        try{ localStorage.setItem(BLOG_IMG_KEY, dataUrl); }catch(e){}
+        applyBlogImg(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+})();
       // --- Export readonly (DOM-based; avoids giant template strings) ---
       function exportReadonly(){
         // Create a minimal readonly document and copy styles + a cleaned main
@@ -817,6 +815,7 @@
   </script>
 </body>
 </html>
+
 
 
 
