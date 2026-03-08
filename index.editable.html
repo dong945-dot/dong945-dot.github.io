@@ -159,6 +159,15 @@
 /* 保持框的固定大小 */
 .pubThumb{
   width: 210px;
+  /* Publication dynamic list */
+.pubDynamicList{ margin-top: 32px; display:flex; flex-direction:column; gap: 18px; }
+
+/* 固定缩略图列为 210px，框大小不变 */
+.pubItem{ display:grid; grid-template-columns: 210px 1fr; gap: 18px; align-items:start; }
+
+/* 保持框的固定大小 */
+.pubThumb{
+  width: 210px;
   height: 130px;
   border-radius: 4px;
   border: 1px solid rgba(15,23,42,.10);
@@ -178,14 +187,13 @@
   background: rgba(255,255,255,0);
 }
 
-/* 让图片在固定框内等比缩放以适应（不变形） */
-/* 如果希望图片裁切填满框（可能会裁掉部分），把 object-fit: contain 改为 object-fit: cover */
+/* 让图片填满并裁切（没有留白） */
 .pubThumb img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
-  object-fit:contain;
+  object-fit:cover;
   display:block;
 }
 
@@ -205,23 +213,6 @@
   -webkit-backdrop-filter: blur(8px);
   z-index: 3;
 }
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 3;
-}
-      z-index: 2;
-    }
-    .pubAdd{ border-style:dashed; background: rgba(255,255,255,.65); }
-    .pubAdd button{
-      position:absolute; inset:0;
-      border:0; background: transparent;
-      cursor:pointer;
-      font-weight: 900;
-      font-size: 40px;
-      color: rgba(15,23,42,.55);
-    }
-    .pubAdd button:hover{ color: rgba(37,99,235,.75); }
-    .pubMeta h3{ margin: 0 0 6px; font-size: 16px; font-weight: 600; text-align:left; }
     .pubMeta .meta{ margin: 0 0 8px; font-size: 13.5px; color: rgba(91,107,128,.95); line-height: 1.7; text-align:left; }
     .pubMeta .desc{ margin: 0; font-size: 14px; color: #2a3857; line-height: 1.85; max-width: 90ch; text-align:left; }
     .pubActions{ display:flex; gap:10px; margin-top: 32px; flex-wrap:wrap; }
@@ -815,6 +806,7 @@
   </script>
 </body>
 </html>
+
 
 
 
