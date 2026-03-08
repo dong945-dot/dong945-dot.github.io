@@ -335,9 +335,12 @@
     <section>
       <div class="sectionInner">
         <h2>Blog</h2>
-        <div class="entryRow">
-          <div class="thumb" aria-hidden="true"></div>
-          <div class="entry" id="blog1" contenteditable="true">
+        <div class="entry" id="blog1" contenteditable="true">
+          <div class="blogImgBox">
+          <img id="blogImg" src="" alt="Blog Image" style="display:none;max-width:100%;border-radius:6px;margin-bottom:8px;">
+          <input id="blogImgUpload" type="file" accept="image/*" style="display:none;">
+          <button type="button" id="blogImgBtn" class="btn" style="margin-bottom:8px;">æ·»åŠ å›¾ç‰‡</button>
+          </div>
             <h3><a href="#" class="placeholder">Post title (add link later)</a></h3>
             <p class="meta"><span class="placeholder">YYYY/MM/DD</span></p>
             <p class="desc"><span class="placeholder">One-sentence summary...</span></p>
@@ -504,7 +507,7 @@
         const pMeta = document.createElement("p");
         pMeta.className = "meta";
         pMeta.contentEditable = "true";
-        pMeta.innerHTML = it.metaHtml || "Authors ¡¤ Venue, Year";
+        pMeta.innerHTML = it.metaHtml || "Authors Â¡Â¤ Venue, Year";
         meta.appendChild(pMeta);
 
         const pDesc = document.createElement("p");
@@ -632,7 +635,7 @@
             pdfHref: "papers/your-paper.pdf",
             coverSrc: "",
             titleHtml: "Paper title (edit)",
-            metaHtml: "Authors ¡¤ Venue, Year",
+            metaHtml: "Authors Â¡Â¤ Venue, Year",
             descHtml: "Short description..."
           });
           saveItems(items);
@@ -644,7 +647,7 @@
         const addMeta = document.createElement("div");
         addMeta.className = "pubMeta";
         addMeta.innerHTML = `<p class="meta">
-          Click <strong>£«</strong> to add an item. PDF should be in <span class="mono">papers/</span>,
+          Click <strong>Â£Â«</strong> to add an item. PDF should be in <span class="mono">papers/</span>,
           covers in <span class="mono">papers/covers/</span>.
         </p>`;
 
@@ -776,6 +779,7 @@
   </script>
 </body>
 </html>
+
 
 
 
